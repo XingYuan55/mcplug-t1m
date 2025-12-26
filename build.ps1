@@ -1,0 +1,1 @@
+cd D:\XY55\prog\mcplug\t1m; $env:JAVA_HOME="C:\Users\afang\.jdks\ms-21.0.9"; Write-Host "`n=== 开始构建过程 ===" -ForegroundColor Green; Write-Host "`n执行命令: gradle build --info" -ForegroundColor Yellow; & "D:\XY55\gradle-9.2.1\bin\gradle.bat" build --info 2>&1 | Select-String -Pattern "Task|BUILD|Starting|Executing|:compile|:process|:jar" | Select-Object -First 30
