@@ -1,5 +1,4 @@
 name: t1m
 version: '${version}'
-main: com.mc.t1mplugin.t1m.T1m
+main: com.mc.t1mplugin.t1m.PlugMain
 api-version: '1.21'
-

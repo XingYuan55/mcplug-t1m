@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.Bukkit;
 
-public class DeathCoordinates implements Listener {
+public class DeathProcess implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         // 获取玩家死亡的位置
@@ -14,8 +14,9 @@ public class DeathCoordinates implements Listener {
         Player victim = event.getEntity().getPlayer();
         Player killer = event.getEntity().getKiller();
         
-        int delta_victim_health = 1;
-        int delta_killer_health = -1;
+        // 从配置中读取生命值增减
+        int delta_victim_health = HealthConfig.getVictimHealthDelta();
+        int delta_killer_health = HealthConfig.getKillerHealthDelta();
         // 在游戏聊天框内输出坐标
         // event.getEntity().sendMessage("你死亡的坐标1是: " + location.getX() + ", " + location.getY() + ", " + location.getZ());
         // victim.sendMessage("你死亡的坐标2是: " + location.getX() + ", " + location.getY() + ", " + location.getZ());
