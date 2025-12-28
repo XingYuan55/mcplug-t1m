@@ -1,0 +1,4 @@
+name: t1m
+version: '1.0-SNAPSHOTa3'
+main: com.mc.t1mplugin.t1m.PlugMain
+api-version: '1.21'

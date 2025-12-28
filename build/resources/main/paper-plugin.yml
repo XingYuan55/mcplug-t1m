@@ -1,0 +1,5 @@
+name: t1m
+version: '${version}'
+main: com.mc.t1mplugin.t1m.PlugMain
+description: t1m plugin
+api-version: '1.21'
