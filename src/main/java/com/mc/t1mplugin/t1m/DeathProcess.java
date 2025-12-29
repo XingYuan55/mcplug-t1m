@@ -8,7 +8,11 @@ import org.bukkit.Bukkit;
 
 public class DeathProcess implements Listener {
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
+    public boolean onPlayerDeath(PlayerDeathEvent event) {
+        if (!WhetherStartConfig.is_started_flag)
+        {
+            return true;
+        }
         // 获取玩家死亡的位置
         Location location = event.getEntity().getLocation();
         Player victim = event.getEntity().getPlayer();
