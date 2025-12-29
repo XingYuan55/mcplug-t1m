@@ -41,8 +41,8 @@ public class PlugCommand implements CommandExecutor, TabCompleter{
                         return true;
                     }
                     switch (args[1]) {
-                        case "killer_applied_group":
-                        case "victim_applied_group":
+                        case "applied_killer":
+                        case "applied_victim":
                             return handleSetAppliedGroupCommands(sender, args);
                             
                         case "killer_delta":
@@ -60,8 +60,8 @@ public class PlugCommand implements CommandExecutor, TabCompleter{
                         return true;
                     }
                     switch (args[1]) {
-                        case "killer_applied_group":
-                        case "victim_applied_group":
+                        case "applied_killer":
+                        case "applied_victim":
                             return handleGetAppliedGroupCommands(sender, args);
                             
                         case "killer_delta":
@@ -108,7 +108,7 @@ public class PlugCommand implements CommandExecutor, TabCompleter{
         sender.sendMessage("§e/t1m set <类型> <值> §7- 设置生命值增减配置");
         sender.sendMessage("§7  类型: killer_delta, victim_delta");
         sender.sendMessage("§e/t1m set <类型> <玩家...> §7- 设置启用生命值增减的玩家");
-        sender.sendMessage("§7  类型: killer, victim");
+        sender.sendMessage("§7  类型: applied_killer, applied_victim");
         sender.sendMessage("§e/t1m get <类型> §7- 查看配置");
         sender.sendMessage("§e/t1m reload §7- 重新加载配置");
         sender.sendMessage("§7当前配置:");
@@ -170,7 +170,7 @@ public class PlugCommand implements CommandExecutor, TabCompleter{
     }
 
     private boolean handleSetAppliedGroupCommands(CommandSender sender, String[] args) {
-        if (args.length < 3) {
+        if (args.length < 2) {
             sender.sendMessage("§c用法: /t1m set <killer_applied_group|victim_applied_group> <玩家名...>");
             return true;
         }
@@ -179,12 +179,12 @@ public class PlugCommand implements CommandExecutor, TabCompleter{
             String type = args[1].toLowerCase();
             String[] playerNames = Arrays.copyOfRange(args, 2, args.length);
 
-            if (type.equals("killer_applied_group")){
+            if (type.equals("applied_killer")){
                 HealthConfig.setAppliedKiller(new ArrayList<String>(Arrays.asList(playerNames)));
                 Bukkit.broadcastMessage(sender.getName() + "设置适用生命值增减的击杀者为：" + String.join(" ", playerNames));
             }
 
-            if (type.equals("victim_applied_group")){
+            if (type.equals("applied_victim")){
                 HealthConfig.setAppliedVictim(new ArrayList<String>(Arrays.asList(playerNames)));
                 Bukkit.broadcastMessage(sender.getName() + "设置适用生命值增减的死亡者为：" + String.join(" ", playerNames));
             }
@@ -202,7 +202,7 @@ public class PlugCommand implements CommandExecutor, TabCompleter{
     private boolean handleGetAppliedGroupCommands(CommandSender sender, String[] args) {
         String type = args[1].toLowerCase();
 
-        if (type.equals("killer_applied_group")){
+        if (type.equals("applied_killer")){
             ArrayList<String> players = HealthConfig.getAppliedKiller();
 
             if (players.isEmpty()){
@@ -212,7 +212,7 @@ public class PlugCommand implements CommandExecutor, TabCompleter{
             }
         }
         
-        if (type.equals("victim_applied_group")){
+        if (type.equals("applied_victim")){
             ArrayList<String> players = HealthConfig.getAppliedVictim();
 
             if (players.isEmpty()){
@@ -254,8 +254,8 @@ public class PlugCommand implements CommandExecutor, TabCompleter{
             if (args[0].toLowerCase().equals("set") || args[0].toLowerCase().equals("get")){
                 completions.add("killer_delta");
                 completions.add("victim_delta");
-                completions.add("killer_applied_group");
-                completions.add("victim_applied_group");
+                completions.add("applied_killer");
+                completions.add("applied_victim");
             }
         }
 
