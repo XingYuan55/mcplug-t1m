@@ -5,12 +5,16 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.bukkit.Bukkit;
 import com.mc.t1mplugin.t1m.HealthConfig;
 import com.mc.t1mplugin.t1m.WhetherStartConfig;
 
 
-public class PlugCommand implements CommandExecutor{
+public class PlugCommand implements CommandExecutor, TabCompleter{
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // 检查权限：OP 或拥有 t1m.admin 权限
@@ -85,11 +89,13 @@ public class PlugCommand implements CommandExecutor{
             sender.sendMessage("§c参数不足！使用 /t1m 查看帮助");
             return true;
         } catch (Exception f){
-            sender.sendMessage("命令错误！" + f.getMessage() + " 使用 /t1m 查看帮助")
+            sender.sendMessage("命令错误！" + f.getMessage() + " 使用 /t1m 查看帮助");
         }
+
+        return true;
     }
 
-    private boolean handleReloadCommand(Sender sender){
+    private boolean handleReloadCommand(CommandSender sender){
         HealthConfig.loadConfig();
         Bukkit.broadcastMessage(sender.getName() + "重新加载了t1m插件");
         return true;
@@ -108,8 +114,8 @@ public class PlugCommand implements CommandExecutor{
         sender.sendMessage("§7当前配置:");
         sender.sendMessage("§7  死亡者最大生命值增减: §e" + HealthConfig.getVictimHealthDelta());
         sender.sendMessage("§7  击杀者最大生命值增减: §e" + HealthConfig.getKillerHealthDelta());
-        sender.sendMessage("§7  启用最大生命值增减的击杀者: §e" + HealthConfig.getAppliedVictimGroup());
-        sender.sendMessage("§7  启用最大生命值增减的死亡者: §e" + HealthConfig.getAppliedKillerGroup());
+        sender.sendMessage("§7  启用最大生命值增减的击杀者: §e" + String.join(" ", HealthConfig.getAppliedKiller()));
+        sender.sendMessage("§7  启用最大生命值增减的死亡者: §e" + String.join(" ", HealthConfig.getAppliedVictim()));
         return true;
     }
     
@@ -125,12 +131,12 @@ public class PlugCommand implements CommandExecutor{
             String type = args[1].toLowerCase();
             int value = Integer.parseInt(args[2]);
 
-            if (type == "killer_delta"){
+            if (type.equals("killer_delta")){
                 HealthConfig.setKillerHealthDelta(value);
                 Bukkit.broadcastMessage(sender.getName() + "设置击杀者最大生命值增减为：" + value);
             }
 
-            if (type == "victim_delta"){
+            if (type.equals("victim_delta")){
                 HealthConfig.setVictimHealthDelta(value);
                 Bukkit.broadcastMessage(sender.getName() + "设置死亡者最大生命值增减为：" + value);
             }
@@ -140,16 +146,18 @@ public class PlugCommand implements CommandExecutor{
         } catch (Exception f){
             throw f;
         } 
+
+        return true;
     }
     
     private boolean handleGetDeltaCommands(CommandSender sender, String[] args){
         String type = args[1];
 
-        if (type == "killer_delta") {
+        if (type.equals("killer_delta")) {
             sender.sendMessage("§7击杀者生命值增减: §e" + HealthConfig.getKillerHealthDelta());
         } 
         else 
-            if (type =="victim_delta") 
+            if (type.equals("victim_delta")) 
             {
                 sender.sendMessage("§7死亡者生命值增减: §e" + HealthConfig.getVictimHealthDelta());
             } 
@@ -157,6 +165,8 @@ public class PlugCommand implements CommandExecutor{
                 sender.sendMessage("§c错误: 类型必须是 'killer_delta' 或 'victim_delta'");
                 return true;
             }
+
+        return true;
     }
 
     private boolean handleSetAppliedGroupCommands(CommandSender sender, String[] args) {
@@ -167,16 +177,16 @@ public class PlugCommand implements CommandExecutor{
 
         try{
             String type = args[1].toLowerCase();
-            String[] playerNames = args.subarray(args[2], arg[args.length]);
+            String[] playerNames = Arrays.copyOfRange(args, 2, args.length);
 
-            if (type == "killer_applied_group"){
-                HealthConfig.setAppliedKiller(playerNames);
-                Bukkit.broadcastMessage(sender.getName() + "设置适用生命值增减的击杀者为：" + " ".join(playerNames));
+            if (type.equals("killer_applied_group")){
+                HealthConfig.setAppliedKiller(new ArrayList<String>(Arrays.asList(playerNames)));
+                Bukkit.broadcastMessage(sender.getName() + "设置适用生命值增减的击杀者为：" + String.join(" ", playerNames));
             }
 
-            if (type == "victim_applied_group"){
-                HealthConfig.setAppliedVictim(playerNames);
-                Bukkit.broadcastMessage(sender.getName() + "设置适用生命值增减的死亡者为：" + " ".join(playerNames));
+            if (type.equals("victim_applied_group")){
+                HealthConfig.setAppliedVictim(new ArrayList<String>(Arrays.asList(playerNames)));
+                Bukkit.broadcastMessage(sender.getName() + "设置适用生命值增减的死亡者为：" + String.join(" ", playerNames));
             }
 
         } catch (NumberFormatException e){
@@ -185,15 +195,17 @@ public class PlugCommand implements CommandExecutor{
         } catch (Exception f){
             throw f;
         } 
+
+        return true;
     }   
 
     private boolean handleGetAppliedGroupCommands(CommandSender sender, String[] args) {
         String type = args[1].toLowerCase();
 
         if (type.equals("killer_applied_group")){
-            String[] players = HealthConfig.getAppliedKiller();
+            ArrayList<String> players = HealthConfig.getAppliedKiller();
 
-            if (players.equals(new String[0])){
+            if (players.isEmpty()){
                 sender.sendMessage("§7启用生命值增减的击杀者: §c无");
             } else {
                 sender.sendMessage("§7启用生命值增减的击杀者: §e" + String.join(", ", players));
@@ -201,34 +213,35 @@ public class PlugCommand implements CommandExecutor{
         }
         
         if (type.equals("victim_applied_group")){
-            String[] players = HealthConfig.getAppliedVictim();
+            ArrayList<String> players = HealthConfig.getAppliedVictim();
 
-            if (players.equals(new String[0])){
+            if (players.isEmpty()){
                 sender.sendMessage("§7启用生命值增减的死亡者: §c无");
             } else {
                 sender.sendMessage("§7启用生命值增减的死亡者: §e" + String.join(", ", players));
             }
         }
+
+        return true;
     }
 
     private boolean handleStartCommand(CommandSender sender){
         WhetherStartConfig.is_started_flag = true;
         Bukkit.broadcastMessage(sender.getName() + "启用了生命值增减！");
+
+        return true;
     }
 
-    private boolean handleStopCommland(CommandSender sender){
+    private boolean handleStopCommand(CommandSender sender){
         WhetherStartConfig.is_started_flag = false;
         Bukkit.broadcastMessage(sender.getName() + "禁用了生命值增减！");
-    }
 
-    private boolean handleReloadCommand(CommandSender sender){
-        HealthConfig.loadConfig();
-        sender.sendMessage("重新加载了配置！");
+        return true;
     }
 
     @Override
-    public java.util.ArrayList<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args){
-        java.util.ArrayList<String> completions = new java.util.ArrayList<>();
+    public java.util.List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args){
+        java.util.List<String> completions = new java.util.ArrayList<>();
         if (args.length == 1){
             completions.add("set");
             completions.add("get");

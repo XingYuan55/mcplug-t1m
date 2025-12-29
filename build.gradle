@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.mc.t1mplugin'
-version = '1.0-SNAPSHOTa3'
+version = '1.0-Beta1'
 
 repositories {
     mavenCentral()

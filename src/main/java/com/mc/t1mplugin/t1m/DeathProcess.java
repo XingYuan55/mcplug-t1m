@@ -8,10 +8,11 @@ import org.bukkit.Bukkit;
 
 public class DeathProcess implements Listener {
     @EventHandler
-    public boolean onPlayerDeath(PlayerDeathEvent event) {
+    public void onPlayerDeath(PlayerDeathEvent event) {
         if (!WhetherStartConfig.is_started_flag)
         {
-            return true;
+            event.setCancelled(true);
+            return;
         }
         // 获取玩家死亡的位置
         Location location = event.getEntity().getLocation();
@@ -30,9 +31,6 @@ public class DeathProcess implements Listener {
             // 被玩家击杀
             victim.setMaxHealth(victim.getMaxHealth() + delta_victim_health);
             killer.setMaxHealth(killer.getMaxHealth() + delta_killer_health);
-        } else {
-            // 非玩家击杀（怪物、掉落、自然伤害等）
-            victim.sendMessage("击杀者: 未知（非玩家击杀）");
         }
     }
 }

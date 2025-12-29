@@ -1,3 +1,5 @@
+/* No use */
+
 package com.mc.t1mplugin.t1m;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;

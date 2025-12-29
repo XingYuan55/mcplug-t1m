@@ -13,6 +13,11 @@ public class HealthConfig{
     private static final int DEFAULT_VICTIM_HEALTH_DELTA = 1;
     private static final int DEFAULT_KILLER_HEALTH_DELTA = -1;
 
+
+    // 存储启用生命值增减的玩家列表
+    private static ArrayList<String> appliedVictim = new ArrayList<>();
+    private static ArrayList<String> appliedKiller = new ArrayList<>();
+
     public static void init(JavaPlugin pluginInstance) {
         plugin = pluginInstance;
         loadConfig();
@@ -71,10 +76,6 @@ public class HealthConfig{
         killerHealthDelta = value;
         saveConfig();
     }
-
-    // 存储启用生命值增减的玩家列表
-    private static ArrayList<String> appliedVictim = new ArrayList<>();
-    private static ArrayList<String> appliedKiller = new ArrayList<>();
 
     public static ArrayList<String> getAppliedVictim() {
         return new ArrayList<>(appliedVictim); // 返回副本，防止外部修改
