@@ -36,10 +36,7 @@ public class PlugCommand implements CommandExecutor, TabCompleter{
                     return handleReloadCommand(sender);
                     
                 case "set":
-                    if (args.length < 3) {
-                        sender.sendMessage("§c用法: /t1m set <类型> <值>");
-                        return true;
-                    }
+
                     switch (args[1]) {
                         case "applied_killer":
                         case "applied_victim":
